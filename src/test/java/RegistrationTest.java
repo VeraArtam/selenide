@@ -3,6 +3,7 @@ import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 
 import java.time.Duration;
@@ -21,17 +22,21 @@ public class RegistrationTest {
 
     @Test
     void shouldRegisterDeliveryCard() {
-        String planningDate = generateDate(3,"dd.MM.yyyy");
+        String planningDate = generateDate(4,"dd.MM.yyyy");
 
         Selenide.open("http://localhost:9999");
         SelenideElement form = $$("form").find(visible);
         form.$("[data-test-id='city'] input").setValue("Москва");
-        form.$("[data-test-id='date'] input").setValue(planningDate);
+        form.$("[data-test-id='date'] input")
+                .press(Keys.chord(Keys.SHIFT, Keys.HOME))
+                .press(Keys.DELETE)
+                .setValue(planningDate);
         form.$("[data-test-id='name'] input").setValue("Иванов Иван");
         form.$("[data-test-id='phone'] input").setValue("+79999999999");
         form.$("[data-test-id='agreement']").click();
-        form.$("[class='button button_view_extra button_size_m button_theme_alfa-on-white']").click();
-        $(Selectors.withText("Встреча успешно забронирована"))
+        form.$(Selectors.byText("Забронировать")).click();
+        SelenideElement body = $("body");
+        body.$("[data-test-id='notification']")
                 .shouldBe(visible, Duration.ofSeconds(15))
                 .shouldHave(text("Встреча успешно забронирована на " + planningDate));
     }
