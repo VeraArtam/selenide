@@ -35,8 +35,7 @@ public class RegistrationTest {
         form.$("[data-test-id='phone'] input").setValue("+79999999999");
         form.$("[data-test-id='agreement']").click();
         form.$(Selectors.byText("Забронировать")).click();
-        SelenideElement body = $("body");
-        body.$("[data-test-id='notification']")
+        $("[data-test-id='notification']")
                 .shouldBe(visible, Duration.ofSeconds(15))
                 .shouldHave(text("Встреча успешно забронирована на " + planningDate));
     }
